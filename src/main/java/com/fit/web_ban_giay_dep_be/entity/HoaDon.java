@@ -2,6 +2,8 @@ package com.fit.web_ban_giay_dep_be.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -12,7 +14,7 @@ import java.util.*;
 public class HoaDon {
     @Id
     private String maHoaDon;
-    private Date ngayDat;
+    private LocalDateTime ngayDat;
     private int diemSuDung;
     private double thanhTien;
 
