@@ -4,6 +4,7 @@ import com.fit.web_ban_giay_dep_be.config.TaiKhoanDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -23,7 +24,7 @@ public class JwtUtil {
     public String generateToken(TaiKhoanDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userDetails.getAuthorities().stream()
-                .map(Object::toString)
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
 
         Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));

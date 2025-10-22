@@ -11,9 +11,11 @@ import com.fit.web_ban_giay_dep_be.repository.TaiKhoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -29,10 +31,17 @@ public class AuthController {
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest req) {
         Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
+                new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
+        );
         var userDetails = (TaiKhoanDetails) auth.getPrincipal();
         String token = jwtUtil.generateToken(userDetails);
-        return new AuthResponse(token, userDetails.getUsername());
+
+
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+        return new AuthResponse(token, userDetails.getUsername(), roles);
     }
 
     @PostMapping("/register")
