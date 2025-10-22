@@ -2,11 +2,9 @@
 -- =========================================================
 -- 1️⃣ TAIKHOAN
 -- =========================================================
-# INSERT INTO TaiKhoan (maTaiKhoan, tenDangNhap, matKhau, role) VALUES
-#                                                                   ('TK001', 'admin', '123456', 'ROLE_ADMIN'),
-#                                                                   ('TK002', 'user1', '123456', 'ROLE_USER'),
-#                                                                   ('TK003', 'user2', '123456', 'ROLE_USER'),
-#                                                                   ('TK004', 'staff01', '123456', 'ROLE_ADMIN');
+INSERT INTO tai_khoan (ma_tai_khoan, ten_dang_nhap, mat_khau, role) VALUES
+                                                                  ('TK002', 'user1', '123456', 'ROLE_USER'),
+
 
 -- =========================================================
 -- 2️⃣ KHACHHANG
@@ -35,7 +33,7 @@ INSERT INTO loai_san_pham (ma_loai, ten_loai) VALUES
 -- 5️⃣ NHANVIEN
 -- =========================================================
 INSERT INTO nhan_vien (ma_nhan_vien, ho_ten, sdt, cccd, ngay_sinh, trang_thai_lam_viec, gioi_tinh, ma_tai_khoan) VALUES
-                                                                                                          ('NV001', 'Pham Van D', '0909555111', '123456789', '1995-05-05', 'DangLam', 'Nam', 'TK001');
+                                                                                                          ('NV001', 'Pham Van D', '0909555111', '123456789', '1995-05-05', 'DangLam', 'Nam', 'TK002');
 
 -- =========================================================
 -- 6️⃣ KHUYENMAI
