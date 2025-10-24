@@ -2,10 +2,14 @@
 -- =========================================================
 -- 1️⃣ TAIKHOAN
 -- =========================================================
-INSERT INTO tai_khoan (ma_tai_khoan, ten_dang_nhap, mat_khau, role) VALUES
-                                                                  ('TK002', 'user1', '123456', 'ROLE_USER'),
+INSERT INTO tai_khoan (ma_tai_khoan, email, ten_dang_nhap, mat_khau ) VALUES
+                                                                  ('TK002', 'quyen@gmai.com','user1', '123456');
 
 
+
+
+INSERT INTO tai_khoan_role(ma_tai_khoan, role) VALUES
+    ('TK002', 'ROLE_USER');
 -- =========================================================
 -- 2️⃣ KHACHHANG
 -- =========================================================
