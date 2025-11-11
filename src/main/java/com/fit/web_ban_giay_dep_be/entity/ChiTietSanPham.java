@@ -1,5 +1,6 @@
 package com.fit.web_ban_giay_dep_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,5 +18,6 @@ public class ChiTietSanPham {
 
     @ManyToOne
     @JoinColumn(name = "maSanPham")
+    @JsonIgnore
     private SanPham sanPham;
 }
