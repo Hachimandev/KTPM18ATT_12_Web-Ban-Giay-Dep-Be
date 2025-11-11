@@ -2,6 +2,7 @@ package com.fit.web_ban_giay_dep_be.controller;
 
 import com.fit.web_ban_giay_dep_be.entity.SanPham;
 import com.fit.web_ban_giay_dep_be.service.SanPhamService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,11 +11,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/sanpham")
+@RequestMapping("/api/products")
+@RequiredArgsConstructor
 public class SanPhamController {
 
-    @Autowired
-    private SanPhamService sanPhamService;
+    private final SanPhamService sanPhamService;
 
 
     @GetMapping
