@@ -15,4 +15,5 @@ public interface ChiTietSanPhamService {
     ChiTietSanPham updateChiTietSanPham(String id, ChiTietSanPham chiTietSanPham);
 
     void deleteChiTietSanPham(String id);
+    List<ChiTietSanPham> getChiTietSanPhamBySanPham(String maSanPham);
 }
