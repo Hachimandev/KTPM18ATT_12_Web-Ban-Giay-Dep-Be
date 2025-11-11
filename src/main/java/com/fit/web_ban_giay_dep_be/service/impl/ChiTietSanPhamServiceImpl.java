@@ -42,4 +42,9 @@ public class ChiTietSanPhamServiceImpl implements com.fit.web_ban_giay_dep_be.se
     public void deleteChiTietSanPham(String id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public List<ChiTietSanPham> getChiTietSanPhamBySanPham(String maSanPham) {
+        return repository.findBySanPham_MaSanPham(maSanPham);
+    }
 }

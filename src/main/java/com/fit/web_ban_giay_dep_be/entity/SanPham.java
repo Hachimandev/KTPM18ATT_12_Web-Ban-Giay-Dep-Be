@@ -1,6 +1,7 @@
 package com.fit.web_ban_giay_dep_be.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,6 +46,6 @@ public class SanPham {
     private List<NhaCungCap> nhaCungCaps;
 
     @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonIgnore
+    @JsonManagedReference
     private List<ChiTietSanPham> chiTietSanPhams;
 }

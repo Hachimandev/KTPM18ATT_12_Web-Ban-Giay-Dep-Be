@@ -42,4 +42,10 @@ public class ChiTietSanPhamController {
         service.deleteChiTietSanPham(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/by-product/{productId}")
+    public ResponseEntity<List<ChiTietSanPham>> getBySanPham(@PathVariable String productId) {
+        List<ChiTietSanPham> chiTiets = service.getChiTietSanPhamBySanPham(productId);
+        return ResponseEntity.ok(chiTiets);
+    }
 }
