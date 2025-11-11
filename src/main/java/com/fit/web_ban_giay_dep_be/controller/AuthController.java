@@ -4,9 +4,11 @@ import com.fit.web_ban_giay_dep_be.config.TaiKhoanDetails;
 import com.fit.web_ban_giay_dep_be.dto.AuthRequest;
 import com.fit.web_ban_giay_dep_be.dto.AuthResponse;
 import com.fit.web_ban_giay_dep_be.dto.RegisterRequest;
+import com.fit.web_ban_giay_dep_be.entity.KhachHang;
 import com.fit.web_ban_giay_dep_be.entity.Role;
 import com.fit.web_ban_giay_dep_be.entity.TaiKhoan;
 import com.fit.web_ban_giay_dep_be.jwt.JwtUtil;
+import com.fit.web_ban_giay_dep_be.repository.KhachHangRepository;
 import com.fit.web_ban_giay_dep_be.repository.TaiKhoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
@@ -27,6 +29,8 @@ public class AuthController {
     @Autowired private JwtUtil jwtUtil;
     @Autowired private TaiKhoanRepository userRepository;
     @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired
+    private KhachHangRepository khachHangRepository;
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest req) {
@@ -49,6 +53,7 @@ public class AuthController {
         if (userRepository.existsByTenDangNhap(r.getUsername())) return "Username exists";
         if (r.getEmail() != null && userRepository.existsByEmail(r.getEmail())) return "Email exists";
 
+        // tạo tài khoản mới
         TaiKhoan user = TaiKhoan.builder()
                 .maTaiKhoan(UUID.randomUUID().toString())
                 .tenDangNhap(r.getUsername())
@@ -56,7 +61,22 @@ public class AuthController {
                 .matKhau(passwordEncoder.encode(r.getPassword()))
                 .roles(Set.of(Role.ROLE_USER))
                 .build();
+
         userRepository.save(user);
+
+        // tạo khách hàng và liên kết với tài khoản
+        KhachHang kh = KhachHang.builder()
+                .maKhachHang(UUID.randomUUID().toString())
+                .hoTen(r.getFullName())
+                .email(r.getEmail())
+                .sdt(null)
+                .diaChi(null)
+                .diemTichLuy(0)
+                .taiKhoan(user)
+                .build();
+
+        khachHangRepository.save(kh);
+
         return "Registered";
     }
 }
