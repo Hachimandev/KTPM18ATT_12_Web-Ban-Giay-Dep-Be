@@ -19,8 +19,16 @@ public class SanPhamController {
 
 
     @GetMapping
-    public ResponseEntity<List<SanPham>> getAllSanPham() {
-        return ResponseEntity.ok(sanPhamService.getAllSanPham());
+    public ResponseEntity<List<SanPham>> getAllSanPham(
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) List<String> sizes,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice
+    ) {
+        return ResponseEntity.ok(sanPhamService.getAllSanPham(searchTerm, category, brand, sizes, sort, minPrice, maxPrice));
     }
 
 

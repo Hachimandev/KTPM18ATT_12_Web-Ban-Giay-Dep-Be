@@ -1,5 +1,6 @@
 package com.fit.web_ban_giay_dep_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,9 +23,11 @@ public class KhachHang {
 
     @OneToOne
     @JoinColumn(name = "maTaiKhoan")
+    @JsonIgnore
     private TaiKhoan taiKhoan;
 
 
     @OneToMany(mappedBy = "khachHang", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<HoaDon> hoaDons;
 }

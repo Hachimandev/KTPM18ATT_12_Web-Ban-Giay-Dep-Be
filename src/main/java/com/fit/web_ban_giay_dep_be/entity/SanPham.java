@@ -1,5 +1,6 @@
 package com.fit.web_ban_giay_dep_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,9 @@ public class SanPham {
     private double giaBan;
     private String hinhAnh;
 
+    @Enumerated(EnumType.STRING)
+    private GioiTinh gioiTinh;
+
     @ManyToOne
     @JoinColumn(name = "maNhaCungCap")
     private NhaCungCap nhaCungCap;
@@ -37,8 +41,10 @@ public class SanPham {
             joinColumns = @JoinColumn(name = "maSanPham"),
             inverseJoinColumns = @JoinColumn(name = "maNhaCungCap")
     )
+    @JsonIgnore
     private List<NhaCungCap> nhaCungCaps;
 
-    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<ChiTietSanPham> chiTietSanPhams;
 }
