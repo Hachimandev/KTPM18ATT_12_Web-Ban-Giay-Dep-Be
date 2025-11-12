@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/products", "/api/products/**").permitAll()
                         .requestMatchers("/api/product-details", "/api/product-details/**").permitAll()
-                        .requestMatchers("/api/cart/**").permitAll()
+                        .requestMatchers("/api/cart/**", "/api/cart","/api/order/place").permitAll()
                         .anyRequest().authenticated()
                 );
 

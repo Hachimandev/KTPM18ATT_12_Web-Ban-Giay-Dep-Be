@@ -2,8 +2,11 @@ package com.fit.web_ban_giay_dep_be.controller;
 
 import com.fit.web_ban_giay_dep_be.dto.Cart;
 import com.fit.web_ban_giay_dep_be.dto.CartItemDTO;
+import com.fit.web_ban_giay_dep_be.dto.CartSummary;
 import com.fit.web_ban_giay_dep_be.entity.ChiTietSanPham;
 import com.fit.web_ban_giay_dep_be.service.ChiTietSanPhamService;
+import com.fit.web_ban_giay_dep_be.service.HoaDonService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,74 +17,84 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
 
     private final ChiTietSanPhamService chiTietSanPhamService;
+    private final HoaDonService hoaDonService;
+    private static final String CART_SESSION_KEY = "CART";
 
+    private Cart getCartFromSession(HttpSession session) {
+        Cart cart = (Cart) session.getAttribute(CART_SESSION_KEY);
+        if (cart == null) {
+            cart = new Cart();
+            session.setAttribute(CART_SESSION_KEY, cart);
+        }
+        return cart;
+    }
 
-    // Thêm sản phẩm vào giỏ hàng
     @PostMapping("/add")
-    public ResponseEntity<Cart> addToCart(@RequestBody CartItemDTO item,
-                                          @RequestParam(required = false) Cart cart) {
-        if (cart == null) cart = new Cart();
+    public ResponseEntity<Cart> addToCart(@RequestBody CartItemDTO item, HttpSession session) {
+        Cart cart = getCartFromSession(session);
 
         ChiTietSanPham chiTiet = chiTietSanPhamService.getChiTietSanPhamById(item.getMaChiTiet())
                 .orElseThrow(() -> new RuntimeException("Chi tiết sản phẩm không tồn tại"));
 
         item.setGiaBan(chiTiet.getSanPham().getGiaBan());
         item.setTenSanPham(chiTiet.getSanPham().getTenSanPham());
-
+        item.setHinhAnh(chiTiet.getSanPham().getHinhAnh());
+        item.setSize(chiTiet.getSize());
+        item.setMau(chiTiet.getMau());
         cart.addItem(item, chiTiet.getSoLuongTonKho());
-        cart.setTotalPrice(cart.getTotalPrice()); // cập nhật tổng tiền
+
+        session.setAttribute(CART_SESSION_KEY, cart);
         return ResponseEntity.ok(cart);
     }
 
-    // Xóa sản phẩm khỏi giỏ hàng
     @PostMapping("/remove")
-    public ResponseEntity<Cart> removeFromCart(@RequestBody CartItemDTO item,
-                                               @RequestParam Cart cart) {
+    public ResponseEntity<Cart> removeFromCart(@RequestBody CartItemDTO item, HttpSession session) {
+        Cart cart = getCartFromSession(session);
         cart.removeItem(item.getMaChiTiet());
-        cart.setTotalPrice(cart.getTotalPrice());
+        session.setAttribute(CART_SESSION_KEY, cart);
         return ResponseEntity.ok(cart);
     }
 
-    // Cập nhật số lượng sản phẩm trong giỏ hàng
     @PostMapping("/update-quantity")
-    public ResponseEntity<Cart> updateQuantity(@RequestBody CartItemDTO item,
-                                               @RequestParam Cart cart) {
+    public ResponseEntity<Cart> updateQuantity(@RequestBody CartItemDTO item, HttpSession session) {
+        Cart cart = getCartFromSession(session);
+
         ChiTietSanPham chiTiet = chiTietSanPhamService.getChiTietSanPhamById(item.getMaChiTiet())
                 .orElseThrow(() -> new RuntimeException("Chi tiết sản phẩm không tồn tại"));
 
         cart.updateQuantity(item.getMaChiTiet(), item.getSoLuong(), chiTiet.getSoLuongTonKho());
-        cart.setTotalPrice(cart.getTotalPrice());
+        session.setAttribute(CART_SESSION_KEY, cart);
         return ResponseEntity.ok(cart);
     }
 
-    // Áp dụng mã khuyến mãi
     @PostMapping("/apply-promo")
-    public ResponseEntity<Cart> applyPromo(@RequestParam String maKhuyenMai,
-                                           @RequestParam Cart cart) {
+    public ResponseEntity<Cart> applyPromo(@RequestParam String maKhuyenMai, HttpSession session) {
+        Cart cart = getCartFromSession(session);
         cart.setMaKhuyenMai(maKhuyenMai);
-        cart.setTotalPrice(cart.getTotalPrice());
+        session.setAttribute(CART_SESSION_KEY, cart);
         return ResponseEntity.ok(cart);
     }
 
-    // Sử dụng điểm tích lũy
     @PostMapping("/use-points")
-    public ResponseEntity<Cart> usePoints(@RequestParam int diem,
-                                          @RequestParam Cart cart) {
+    public ResponseEntity<Cart> usePoints(@RequestParam int diem, HttpSession session) {
+        Cart cart = getCartFromSession(session);
         cart.setDiemSuDung(diem);
-        cart.setTotalPrice(cart.getTotalPrice());
+        session.setAttribute(CART_SESSION_KEY, cart);
         return ResponseEntity.ok(cart);
     }
 
-    // Xóa toàn bộ giỏ hàng
     @PostMapping("/clear")
-    public ResponseEntity<Cart> clearCart(@RequestParam Cart cart) {
+    public ResponseEntity<Cart> clearCart(HttpSession session) {
+        Cart cart = getCartFromSession(session);
         cart.clear();
+        session.setAttribute(CART_SESSION_KEY, cart);
         return ResponseEntity.ok(cart);
     }
 
-    // Lấy tổng tiền giỏ hàng
-    @PostMapping("/total")
-    public ResponseEntity<Double> getTotalPrice(@RequestParam Cart cart) {
-        return ResponseEntity.ok(cart.getTotalPrice());
+    @GetMapping("/summary")
+    public ResponseEntity<Object> getCartSummary(HttpSession session) {
+        Cart cart = getCartFromSession(session);
+        Object summary = hoaDonService.getCartSummary(cart);
+        return ResponseEntity.ok(summary);
     }
 }
