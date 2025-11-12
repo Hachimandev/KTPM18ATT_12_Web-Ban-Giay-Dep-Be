@@ -1,9 +1,19 @@
 package com.fit.web_ban_giay_dep_be.repository;
 
 import com.fit.web_ban_giay_dep_be.entity.HoaDon;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+
+import java.util.List;
 
 public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
+
+    @Query("SELECT h FROM HoaDon h WHERE h.maHoaDon LIKE :prefix% ORDER BY h.maHoaDon DESC")
+    List<HoaDon> findByMaHoaDonStartingWithOrderByMaHoaDonDesc(String prefix, Pageable pageable);
+
+
 }
 
 

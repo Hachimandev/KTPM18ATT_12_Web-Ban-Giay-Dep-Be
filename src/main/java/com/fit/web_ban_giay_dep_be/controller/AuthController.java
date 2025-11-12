@@ -10,6 +10,7 @@ import com.fit.web_ban_giay_dep_be.entity.TaiKhoan;
 import com.fit.web_ban_giay_dep_be.jwt.JwtUtil;
 import com.fit.web_ban_giay_dep_be.repository.KhachHangRepository;
 import com.fit.web_ban_giay_dep_be.repository.TaiKhoanRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -47,13 +48,12 @@ public class AuthController {
 
         return new AuthResponse(token, userDetails.getUsername(), roles);
     }
-
+    @Transactional
     @PostMapping("/register")
     public String register(@RequestBody RegisterRequest r) {
         if (userRepository.existsByTenDangNhap(r.getUsername())) return "Username exists";
         if (r.getEmail() != null && userRepository.existsByEmail(r.getEmail())) return "Email exists";
 
-        // tạo tài khoản mới
         TaiKhoan user = TaiKhoan.builder()
                 .maTaiKhoan(UUID.randomUUID().toString())
                 .tenDangNhap(r.getUsername())
@@ -62,9 +62,6 @@ public class AuthController {
                 .roles(Set.of(Role.ROLE_USER))
                 .build();
 
-        userRepository.save(user);
-
-        // tạo khách hàng và liên kết với tài khoản
         KhachHang kh = KhachHang.builder()
                 .maKhachHang(UUID.randomUUID().toString())
                 .hoTen(r.getFullName())
@@ -75,8 +72,10 @@ public class AuthController {
                 .taiKhoan(user)
                 .build();
 
-        khachHangRepository.save(kh);
+        user.setKhachHang(kh);
+        userRepository.save(user); // cascade ALL sẽ tự lưu KhachHang
 
         return "Registered";
     }
+
 }
