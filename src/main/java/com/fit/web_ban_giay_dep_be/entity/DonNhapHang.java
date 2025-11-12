@@ -23,5 +23,5 @@ public class DonNhapHang {
 
     @OneToMany(mappedBy = "donNhapHang", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<ChiTietDonNhap> chiTietDonNhapList;
+    private List<ChiTietDonNhapHang> chiTietDonNhapHangList;
 }
