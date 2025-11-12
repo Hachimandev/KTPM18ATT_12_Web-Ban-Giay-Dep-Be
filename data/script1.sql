@@ -42,7 +42,10 @@ INSERT INTO loai_san_pham (ma_loai, ten_loai) VALUES
 INSERT INTO nha_cung_cap (ma_nha_cung_cap, ten_nha_cung_cap, sdt, email, dia_chi) VALUES
 ('NCC01', 'Nike Việt Nam', '0281112223', 'contact@nike.vn', 'KCN Long Hậu'),
 ('NCC02', 'Adidas Official', '0283334445', 'contact@adidas.vn', 'Quận 7, TP HCM');
-
+INSERT INTO nha_cung_cap (ma_nha_cung_cap, ten_nha_cung_cap, sdt, email, dia_chi) VALUES
+('NCC03', 'Gucci Việt Nam', '0285556667', 'support@gucci.vn', 'Vincom Đồng Khởi, Q1, TP HCM'),
+('NCC04', 'Pedro Việt Nam', '0287778889', 'support@pedro.vn', 'Lotte Mart Nam Sài Gòn'),
+('NCC05', 'Clarks UK', '+44 207123456', 'contact@clarks.co.uk', 'London, United Kingdom');
 
 -- *********************************************************************************
 -- 3. SAN PHAM (Liên kết với LoaiSanPham và NhaCungCap)
@@ -66,6 +69,17 @@ INSERT INTO san_pham (ma_san_pham, ten_san_pham, nuoc_san_xuat, mo_ta, gioi_tinh
 INSERT INTO san_pham_nha_cung_cap (ma_san_pham, ma_nha_cung_cap) VALUES
 ('SP001', 'NCC01'),
 ('SP003', 'NCC02');
+INSERT INTO san_pham_nha_cung_cap (ma_san_pham, ma_nha_cung_cap) VALUES
+('SP001', 'NCC01'),  
+('SP002', 'NCC01'),  
+('SP003', 'NCC02'),  
+('SP004', 'NCC02'),  
+('SP005', 'NCC02'),  
+('SP006', 'NCC03'),  
+('SP007', 'NCC04'),  
+('SP008', 'NCC05'),  
+('SP009', 'NCC02'),  
+('SP010', 'NCC02');  
 
 
 -- *********************************************************************************

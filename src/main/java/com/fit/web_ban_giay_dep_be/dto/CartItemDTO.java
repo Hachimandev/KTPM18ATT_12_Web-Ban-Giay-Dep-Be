@@ -13,4 +13,8 @@ public class CartItemDTO {
     private Integer soLuong;
     private String tenSanPham;
     private Double giaBan;
+    private Integer size;
+    private String mau;
+    private Integer soLuongTonKho;
+    private String hinhAnh;
 }
