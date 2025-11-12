@@ -1,5 +1,6 @@
 package com.fit.web_ban_giay_dep_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +17,7 @@ public class ChiTietHoaDon {
 
     @ManyToOne
     @JoinColumn(name = "maHoaDon")
+    @JsonBackReference
     private HoaDon hoaDon;
 
     @ManyToOne

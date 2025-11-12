@@ -1,6 +1,7 @@
 package com.fit.web_ban_giay_dep_be.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,9 @@ public class HoaDon {
     @Enumerated(EnumType.STRING)
     private TrangThaiHoaDon trangThaiHoaDon;
 
+    @Enumerated(EnumType.STRING)
+    private PhuongThucThanhToan phuongThucThanhToan;
+
     @ManyToOne
     @JoinColumn(name = "maKhachHang")
     @JsonIgnore
@@ -33,7 +37,7 @@ public class HoaDon {
     private KhuyenMai khuyenMai;
 
     @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonManagedReference
     private List<ChiTietHoaDon> chiTietHoaDons = new ArrayList<>();
 
     @ManyToOne
@@ -44,4 +48,5 @@ public class HoaDon {
     @OneToOne(mappedBy = "hoaDon", cascade = CascadeType.ALL)
     @JsonIgnore
     private DonHuyTraHang donHuyTraHang;
+
 }

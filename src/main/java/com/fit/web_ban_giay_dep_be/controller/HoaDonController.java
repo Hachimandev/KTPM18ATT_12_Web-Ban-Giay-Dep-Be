@@ -1,5 +1,7 @@
 package com.fit.web_ban_giay_dep_be.controller;
 
+import com.fit.web_ban_giay_dep_be.dto.HoaDonResponseDTO;
+import com.fit.web_ban_giay_dep_be.dto.OrderRequest;
 import com.fit.web_ban_giay_dep_be.entity.HoaDon;
 import com.fit.web_ban_giay_dep_be.service.HoaDonService;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +48,17 @@ public class HoaDonController {
         hoaDonService.deleteHoaDon(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/checkout")
+    public ResponseEntity<?> placeOrder(@RequestBody OrderRequest request) {
+        try {
+            HoaDonResponseDTO hoaDon = hoaDonService.createHoaDonFromCart(request);
+            return ResponseEntity.ok(hoaDon);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 
 }

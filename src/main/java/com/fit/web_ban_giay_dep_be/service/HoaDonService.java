@@ -1,6 +1,8 @@
 package com.fit.web_ban_giay_dep_be.service;
 
 import com.fit.web_ban_giay_dep_be.dto.Cart;
+import com.fit.web_ban_giay_dep_be.dto.HoaDonResponseDTO;
+import com.fit.web_ban_giay_dep_be.dto.OrderRequest;
 import com.fit.web_ban_giay_dep_be.entity.HoaDon;
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +17,6 @@ public interface HoaDonService {
     double calculateFinalPrice(Cart cart);
 
     Object getCartSummary(Cart cart);
+
+    HoaDonResponseDTO createHoaDonFromCart(OrderRequest request);
 }

@@ -31,6 +31,9 @@ public class TaiKhoan {
     @Column(name = "role")
     private Set<Role> roles;
 
+    @OneToOne(mappedBy = "taiKhoan", cascade = CascadeType.ALL)
+    private KhachHang khachHang;
+
     @Override
     public String toString() {
         return tenDangNhap + " - " + roles;
