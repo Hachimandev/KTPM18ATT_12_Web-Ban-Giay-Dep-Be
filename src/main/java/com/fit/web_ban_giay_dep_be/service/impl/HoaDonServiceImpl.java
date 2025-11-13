@@ -65,6 +65,14 @@ public class HoaDonServiceImpl implements HoaDonService {
         return null;
     }
 
+    @Override
+    public HoaDon updateOrderStatus(String id, TrangThaiHoaDon newStatus) {
+        HoaDon hoaDon = hoaDonRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
+        hoaDon.setTrangThaiHoaDon(newStatus);
+        return hoaDonRepository.save(hoaDon);
+    }
+
     @Transactional
     @Override
     public HoaDonResponseDTO createHoaDonFromCart(OrderRequest request) {
