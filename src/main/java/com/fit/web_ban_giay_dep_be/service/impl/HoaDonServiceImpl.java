@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -69,14 +70,12 @@ public class HoaDonServiceImpl implements HoaDonService {
     public HoaDonResponseDTO createHoaDonFromCart(OrderRequest request) {
         HoaDon hoaDon = new HoaDon();
 
-        // Mã hóa đơn tự tăng
         hoaDon.setMaHoaDon(generateMaHoaDon());
         hoaDon.setNgayDat(LocalDateTime.now());
         hoaDon.setThanhTien(request.getThanhTien());
         hoaDon.setDiemSuDung(request.getCart().getDiemSuDung());
         hoaDon.setTrangThaiHoaDon(TrangThaiHoaDon.CHO_XAC_NHAN);
 
-        // Phương thức thanh toán
         try {
             hoaDon.setPhuongThucThanhToan(
                     PhuongThucThanhToan.valueOf(request.getUserInfo().getPhuongThucThanhToan())
@@ -85,22 +84,31 @@ public class HoaDonServiceImpl implements HoaDonService {
             throw new RuntimeException("Phương thức thanh toán không hợp lệ");
         }
 
-        // Khách hàng
         KhachHang kh = khachHangRepo.findByEmail(request.getUserInfo().getEmail())
                 .orElseThrow(() -> new RuntimeException("Khách hàng không tồn tại"));
         hoaDon.setKhachHang(kh);
 
-        // Khuyến mãi
         if (request.getCart().getMaKhuyenMai() != null) {
             KhuyenMai km = khuyenMaiRepo.findById(request.getCart().getMaKhuyenMai())
                     .orElse(null);
             hoaDon.setKhuyenMai(km);
         }
 
-        // Chi tiết hóa đơn
+        Pageable limitOne = PageRequest.of(0, 1);
+        List<ChiTietHoaDon> list = chiTietHoaDonRepository.findAllOrderByMaChiTietHoaDonDesc(limitOne);
+        AtomicInteger nextCTHD = new AtomicInteger(1);
+        if (!list.isEmpty()) {
+            String lastMa = list.get(0).getMaChiTietHoaDon();
+            if (lastMa.startsWith("CTHD")) {
+                try {
+                    nextCTHD.set(Integer.parseInt(lastMa.substring(4)) + 1);
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+
         List<ChiTietHoaDon> chiTiets = request.getCart().getItems().stream().map(item -> {
             ChiTietHoaDon ct = new ChiTietHoaDon();
-            ct.setMaChiTietHoaDon(generateMaChiTietHoaDon());
+            ct.setMaChiTietHoaDon(String.format("CTHD%04d", nextCTHD.getAndIncrement()));
             ct.setSoLuong(item.getSoLuong());
             ct.setTongTien(item.getGiaBan() * item.getSoLuong());
 
@@ -121,10 +129,8 @@ public class HoaDonServiceImpl implements HoaDonService {
         }).toList();
 
         hoaDon.setChiTietHoaDons(chiTiets);
-
         HoaDon savedHoaDon = hoaDonRepository.save(hoaDon);
 
-        // Trả về DTO
         HoaDonResponseDTO dto = new HoaDonResponseDTO();
         dto.setMaHoaDon(savedHoaDon.getMaHoaDon());
         dto.setThanhTien(savedHoaDon.getThanhTien());
@@ -133,20 +139,17 @@ public class HoaDonServiceImpl implements HoaDonService {
         return dto;
     }
 
-    // ------------------- Mã tự tăng -------------------
-    private String generateMaHoaDon() {
-        // Lấy ngày hôm nay
-        LocalDate today = LocalDate.now();
-        String datePart = today.format(DateTimeFormatter.ofPattern("ddMMyyyy")); // ddMMyyyy
 
-        // Lấy hóa đơn gần nhất hôm nay
+    private String generateMaHoaDon() {
+        LocalDate today = LocalDate.now();
+        String datePart = today.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
         Pageable limitOne = PageRequest.of(0, 1);
         List<HoaDon> list = hoaDonRepository.findByMaHoaDonStartingWithOrderByMaHoaDonDesc("HD" + datePart, limitOne);
 
         int next = 1;
         if (!list.isEmpty()) {
             String lastMa = list.get(0).getMaHoaDon();
-            String numPart = lastMa.substring(10); // 10 ký tự đầu: HD + ddMMyyyy
+            String numPart = lastMa.substring(10);
             try {
                 next = Integer.parseInt(numPart) + 1;
             } catch (NumberFormatException e) {
@@ -162,7 +165,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         List<ChiTietHoaDon> list = chiTietHoaDonRepository.findAllOrderByMaChiTietHoaDonDesc(limitOne);
         int next = 1;
         if (!list.isEmpty()) {
-            String lastMa = list.get(0).getMaChiTietHoaDon(); // VD: CTHD0005
+            String lastMa = list.get(0).getMaChiTietHoaDon();
             if (lastMa.startsWith("CTHD")) {
                 try {
                     next = Integer.parseInt(lastMa.substring(4)) + 1;

@@ -31,12 +31,43 @@ public class KhachHangController {
         KhachHang kh = khachHangService.findByTaiKhoan_TenDangNhap(username);
         if (kh == null) return null;
 
-        String[] parts = kh.getDiaChi() != null ? kh.getDiaChi().split(",") : new String[0];
-        String phuongXa = parts.length > 0 ? parts[0].trim() : "";
-        String quanHuyen = parts.length > 1 ? parts[1].trim() : "";
-        String tinhThanh = parts.length > 2 ? parts[2].trim() : "";
+        String diaChiChiTiet = "";
+        String phuongXa = "";
+        String quanHuyen = "";
+        String tinhThanh = "";
 
-        return new KhachHangDTO(kh.getHoTen(), kh.getEmail(), kh.getSdt(), phuongXa, quanHuyen, tinhThanh);
+        if (kh.getDiaChi() != null && !kh.getDiaChi().isBlank()) {
+            String[] parts = kh.getDiaChi().split(",");
+            for (int i = 0; i < parts.length; i++) {
+                parts[i] = parts[i].trim();
+            }
+
+            if (parts.length >= 4) {
+                diaChiChiTiet = parts[0];
+                phuongXa = parts[1];
+                quanHuyen = parts[2];
+                tinhThanh = parts[3];
+            } else if (parts.length == 3) {
+                phuongXa = parts[0];
+                quanHuyen = parts[1];
+                tinhThanh = parts[2];
+            } else if (parts.length == 2) {
+                quanHuyen = parts[0];
+                tinhThanh = parts[1];
+            } else if (parts.length == 1) {
+                tinhThanh = parts[0];
+            }
+        }
+
+        return new KhachHangDTO(
+                kh.getHoTen(),
+                kh.getEmail(),
+                kh.getSdt(),
+                diaChiChiTiet,
+                phuongXa,
+                quanHuyen,
+                tinhThanh
+        );
     }
 
     @PutMapping("/update/{username}")

@@ -113,6 +113,48 @@ INSERT INTO chi_tiet_san_pham (ma_chi_tiet, mau, size, so_luong_ton_kho, ma_san_
 ('CT017', '#FFB6C1', 36, 10, 'SP010'),
 ('CT018', '#FFD700', 37, 12, 'SP010');
 
+INSERT INTO chi_tiet_san_pham (ma_chi_tiet, mau, size, so_luong_ton_kho, ma_san_pham) VALUES
+-- SP001 - Giày Sneaker Trắng XYZ
+('CT019', '#FFFFFF', 41, 12, 'SP001'),
+('CT020', '#FFFFFF', 42, 10, 'SP001'),
+
+-- SP002 - Giày Boot Da Đen
+('CT021', '#000000', 43, 7, 'SP002'),
+('CT022', '#000000', 44, 5, 'SP002'),
+
+-- SP003 - Giày Chạy Bộ AirMax
+('CT023', '#000000', 36, 15, 'SP003'),
+('CT024', '#000000', 37, 12, 'SP003'),
+
+-- SP004 - Sandal Quai Hậu Nữ
+('CT025', '#FFFFFF', 36, 8, 'SP004'),
+('CT026', '#FFFFFF', 37, 10, 'SP004'),
+('CT027', '#FF69B4', 38, 6, 'SP004'),
+
+-- SP005 - Giày Canvas Trẻ Trung
+('CT028', '#000000', 42, 10, 'SP005'),
+('CT029', '#FFFFFF', 43, 8, 'SP005'),
+
+-- SP006 - Giày Cao Gót Quyến Rũ
+('CT030', '#FF69B4', 38, 7, 'SP006'),
+('CT031', '#FFB6C1', 39, 5, 'SP006'),
+
+-- SP007 - Giày Lười Công Sở
+('CT032', '#8B4513', 42, 9, 'SP007'),
+('CT033', '#000000', 43, 6, 'SP007'),
+
+-- SP008 - Giày Oxford Cổ Điển
+('CT034', '#654321', 43, 5, 'SP008'),
+('CT035', '#000000', 44, 4, 'SP008'),
+
+-- SP009 - Sandal Ngang Nam Thể Thao
+('CT036', '#000000', 42, 15, 'SP009'),
+('CT037', '#1E90FF', 43, 12, 'SP009'),
+
+-- SP010 - Sandal Nữ Đi Biển
+('CT038', '#FFB6C1', 38, 10, 'SP010'),
+('CT039', '#FFD700', 39, 8, 'SP010');
+
 
 -- *********************************************************************************
 -- 5. NHAN VIEN & KHACH HANG
@@ -125,19 +167,6 @@ INSERT INTO nhan_vien (ma_nhan_vien, ho_ten, sdt, cccd, ngay_sinh, trang_thai_la
 
 -- Bảng KhachHang -> khach_hang
 INSERT INTO khach_hang (ma_khach_hang, ho_ten, email, sdt, dia_chi, diem_tich_luy, ma_tai_khoan) VALUES
-('KH001', 'Nguyễn Thị B', 'khachhang@gmail.com', '0987654321', '123 Đường Nguyễn Huệ, Q1', 50, 'TK002');
+('KH001', 'Nguyễn Thị B', 'khachhang@gmail.com', '0987654321', '123 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP Hồ Chí Minh', 50, 'TK002');
 
 
--- *********************************************************************************
--- 6. HOA DON (Hóa đơn mẫu)
--- *********************************************************************************
-
--- Bảng HoaDon -> hoa_don
--- Sử dụng giá trị Enum (DA_GIAO)
-INSERT INTO hoa_don (ma_hoa_don, ngay_dat, diem_su_dung, thanh_tien, trang_thai_hoa_don, ma_khach_hang, ma_nhan_vien) VALUES
-('HD001', NOW(), 0, 2098000.00, 'DA_GIAO', 'KH001', 'NV001');
-
--- Bảng ChiTietHoaDon -> chi_tiet_hoa_don
-INSERT INTO chi_tiet_hoa_don (ma_chi_tiet_hoa_don, so_luong, tong_tien, ma_hoa_don, ma_san_pham, ma_chi_tiet_san_pham) VALUES
-('CTHD001', 1, 899000.00, 'HD001', 'SP001', 'CT001'),  -- SP001 size 39
-('CTHD002', 1, 1199000.00, 'HD001', 'SP003', 'CT005'); -- SP003 size 38

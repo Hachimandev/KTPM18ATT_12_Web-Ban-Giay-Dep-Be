@@ -11,6 +11,7 @@ public class KhachHangDTO {
     private String hoTen;
     private String email;
     private String sdt;
+    private String diaChiChiTiet;
     private String phuongXa;
     private String quanHuyen;
     private String tinhThanh;
