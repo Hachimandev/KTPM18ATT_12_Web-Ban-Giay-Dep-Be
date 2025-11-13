@@ -4,6 +4,8 @@ import com.fit.web_ban_giay_dep_be.dto.Cart;
 import com.fit.web_ban_giay_dep_be.dto.HoaDonResponseDTO;
 import com.fit.web_ban_giay_dep_be.dto.OrderRequest;
 import com.fit.web_ban_giay_dep_be.entity.HoaDon;
+import com.fit.web_ban_giay_dep_be.entity.TrangThaiHoaDon;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,4 +21,5 @@ public interface HoaDonService {
     Object getCartSummary(Cart cart);
 
     HoaDonResponseDTO createHoaDonFromCart(OrderRequest request);
+    HoaDon updateOrderStatus(String id, TrangThaiHoaDon newStatus);
 }
