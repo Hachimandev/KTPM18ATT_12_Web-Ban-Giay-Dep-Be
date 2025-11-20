@@ -5,6 +5,7 @@ import com.fit.web_ban_giay_dep_be.dto.HoaDonResponseDTO;
 import com.fit.web_ban_giay_dep_be.dto.OrderRequest;
 import com.fit.web_ban_giay_dep_be.entity.*;
 import com.fit.web_ban_giay_dep_be.repository.*;
+import com.fit.web_ban_giay_dep_be.service.EmailService;
 import com.fit.web_ban_giay_dep_be.service.HoaDonService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,8 @@ public class HoaDonServiceImpl implements HoaDonService {
     private final KhuyenMaiRepository khuyenMaiRepo;
     private final ChiTietSanPhamRepository chiTietSanPhamRepository;
     private final ChiTietHoaDonRepository chiTietHoaDonRepository;
+
+    private final EmailService emailService;
 
     @Override
     public List<HoaDon> getAllHoaDon() {
@@ -143,6 +146,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         dto.setMaHoaDon(savedHoaDon.getMaHoaDon());
         dto.setThanhTien(savedHoaDon.getThanhTien());
         dto.setTrangThaiHoaDon(savedHoaDon.getTrangThaiHoaDon().name());
+        emailService.sendOrderEmail(kh.getEmail(), savedHoaDon);
 
         return dto;
     }
