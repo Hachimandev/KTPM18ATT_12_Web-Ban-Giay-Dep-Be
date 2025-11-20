@@ -8,9 +8,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChiTietDonNhap {
+public class ChiTietDonNhapHang {
     @Id
-    private String maChiTietDonNhap;
+    private String maChiTietDonNhapHang;
     private int soLuong;
     private double giaNhap;
 
