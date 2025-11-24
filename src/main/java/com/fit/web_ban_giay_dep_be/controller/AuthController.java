@@ -3,6 +3,7 @@ package com.fit.web_ban_giay_dep_be.controller;
 import com.fit.web_ban_giay_dep_be.config.TaiKhoanDetails;
 import com.fit.web_ban_giay_dep_be.dto.AuthRequest;
 import com.fit.web_ban_giay_dep_be.dto.AuthResponse;
+import com.fit.web_ban_giay_dep_be.dto.GoogleLoginRequest;
 import com.fit.web_ban_giay_dep_be.dto.RegisterRequest;
 import com.fit.web_ban_giay_dep_be.entity.KhachHang;
 import com.fit.web_ban_giay_dep_be.entity.Role;
@@ -10,6 +11,10 @@ import com.fit.web_ban_giay_dep_be.entity.TaiKhoan;
 import com.fit.web_ban_giay_dep_be.jwt.JwtUtil;
 import com.fit.web_ban_giay_dep_be.repository.KhachHangRepository;
 import com.fit.web_ban_giay_dep_be.repository.TaiKhoanRepository;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
@@ -76,6 +81,65 @@ public class AuthController {
         userRepository.save(user); // cascade ALL sẽ tự lưu KhachHang
 
         return "Registered";
+    }
+
+
+    @PostMapping("/login-google")
+    public AuthResponse loginWithGoogle(@RequestBody GoogleLoginRequest req) {
+
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+                    new NetHttpTransport(),
+                    new GsonFactory()
+            ).setAudience(List.of("586282939098-ju8to28c5rspseash1t3cng4r6d1ursl.apps.googleusercontent.com", "586282939098-61fm5vqcb51lc312l502b7j8t7oukiv8.apps.googleusercontent.com"))
+                    .build();
+
+            GoogleIdToken idToken = verifier.verify(req.getIdToken());
+            if (idToken == null) {
+                throw new RuntimeException("Token Google không hợp lệ");
+            }
+
+            GoogleIdToken.Payload payload = idToken.getPayload();
+
+            String email = payload.getEmail();
+            String fullName = (String) payload.get("name");
+
+            // --- kiểm tra tài khoản ---
+            TaiKhoan user = userRepository.findByEmail(email).orElse(null);
+
+            if (user == null) {
+                // --- tạo tài khoản mới ---
+                user = TaiKhoan.builder()
+                        .maTaiKhoan(UUID.randomUUID().toString())
+                        .tenDangNhap(email)
+                        .email(email)
+                        .matKhau(passwordEncoder.encode("GOOGLE_USER"))
+                        .roles(Set.of(Role.ROLE_USER))
+                        .build();
+
+                KhachHang kh = KhachHang.builder()
+                        .maKhachHang(UUID.randomUUID().toString())
+                        .hoTen(fullName)
+                        .email(email)
+                        .diemTichLuy(0)
+                        .taiKhoan(user)
+                        .build();
+
+                user.setKhachHang(kh);
+                userRepository.save(user);
+            }
+
+            // --- tạo JWT ---
+            TaiKhoanDetails details = new TaiKhoanDetails(user);
+            String token = jwtUtil.generateToken(details);
+
+            List<String> roles = user.getRoles().stream().map(Enum::name).toList();
+
+            return new AuthResponse(token, user.getTenDangNhap(), roles);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Login Google thất bại: " + e.getMessage());
+        }
     }
 
 }

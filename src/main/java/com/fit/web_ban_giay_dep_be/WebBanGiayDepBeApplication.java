@@ -1,5 +1,6 @@
 package com.fit.web_ban_giay_dep_be;
 
+import com.fit.web_ban_giay_dep_be.config.DotenvConfig;
 import com.fit.web_ban_giay_dep_be.config.TaiKhoanDetails;
 import com.fit.web_ban_giay_dep_be.entity.Role;
 import com.fit.web_ban_giay_dep_be.entity.TaiKhoan;
@@ -16,9 +17,11 @@ import java.util.Set;
 public class WebBanGiayDepBeApplication {
 
     public static void main(String[] args) {
+        DotenvConfig.dotenv.entries().forEach(entry ->
+                System.setProperty(entry.getKey(), entry.getValue())
+        );
         SpringApplication.run(WebBanGiayDepBeApplication.class, args);
     }
-
     @Bean
     CommandLineRunner initAdmin(TaiKhoanRepository repo, PasswordEncoder encoder) {
         return args -> {
