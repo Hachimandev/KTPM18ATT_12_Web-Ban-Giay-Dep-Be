@@ -5,5 +5,6 @@ public enum TrangThaiHoaDon {
     DANG_GIAO,
     DA_GIAO,
     DA_HUY,
-    TRA_HANG
+    TRA_HANG,
+    CHO_HUY
 }

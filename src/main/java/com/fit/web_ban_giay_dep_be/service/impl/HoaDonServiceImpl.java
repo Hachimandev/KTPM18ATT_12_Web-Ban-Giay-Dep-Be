@@ -5,8 +5,10 @@ import com.fit.web_ban_giay_dep_be.dto.HoaDonResponseDTO;
 import com.fit.web_ban_giay_dep_be.dto.OrderRequest;
 import com.fit.web_ban_giay_dep_be.entity.*;
 import com.fit.web_ban_giay_dep_be.repository.*;
+import com.fit.web_ban_giay_dep_be.service.DonHuyTraHangService;
 import com.fit.web_ban_giay_dep_be.service.EmailService;
 import com.fit.web_ban_giay_dep_be.service.HoaDonService;
+import com.fit.web_ban_giay_dep_be.service.KhachHangService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +33,14 @@ public class HoaDonServiceImpl implements HoaDonService {
     private final ChiTietHoaDonRepository chiTietHoaDonRepository;
 
     private final EmailService emailService;
+    private final KhachHangService khachHangService;
+    private final DonHuyTraHangService donHuyTraHangService;
+
+    @Override
+    public String getKhachHangIdByUsername(String username) {
+        // Ủy quyền (Delegate) logic tìm kiếm cho KhachHangService
+        return khachHangService.getKhachHangIdByUsername(username);
+    }
 
     @Override
     public List<HoaDon> getAllHoaDon() {
@@ -74,6 +84,26 @@ public class HoaDonServiceImpl implements HoaDonService {
                 .orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
         hoaDon.setTrangThaiHoaDon(newStatus);
         return hoaDonRepository.save(hoaDon);
+    }
+
+    @Transactional
+    @Override
+    public HoaDon handleCancellationRequest(String maHoaDon, boolean approve) {
+        HoaDon hoaDon = hoaDonRepository.findById(maHoaDon)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn " + maHoaDon));
+
+        if (hoaDon.getTrangThaiHoaDon() != TrangThaiHoaDon.CHO_HUY) {
+            throw new RuntimeException("Đơn hàng không ở trạng thái Chờ hủy.");
+        }
+
+        if (approve) {
+            String maKhachHang = hoaDon.getKhachHang().getMaKhachHang();
+            return donHuyTraHangService.cancelOrder(maHoaDon, maKhachHang);
+
+        } else {
+            hoaDon.setTrangThaiHoaDon(TrangThaiHoaDon.DANG_GIAO);
+            return hoaDonRepository.save(hoaDon);
+        }
     }
 
     @Transactional

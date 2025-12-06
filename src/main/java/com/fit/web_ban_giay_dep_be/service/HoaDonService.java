@@ -21,5 +21,7 @@ public interface HoaDonService {
     Object getCartSummary(Cart cart);
 
     HoaDonResponseDTO createHoaDonFromCart(OrderRequest request);
-    HoaDon updateOrderStatus(String id, TrangThaiHoaDon newStatus);
+    HoaDon updateOrderStatus(String maHoaDon, TrangThaiHoaDon newStatus);
+    String getKhachHangIdByUsername(String username);
+    HoaDon handleCancellationRequest(String maHoaDon, boolean approve);
 }
