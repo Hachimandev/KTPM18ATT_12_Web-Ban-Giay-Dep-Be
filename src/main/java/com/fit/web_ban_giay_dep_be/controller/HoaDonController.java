@@ -160,8 +160,8 @@ public class HoaDonController {
     // Controller
     @PostMapping("/confirm-cancel/{id}")
     public ResponseEntity<?> confirmCancellation(
-                                                  @PathVariable String id,
-                                                  @RequestBody Map<String, Boolean> body
+      @PathVariable String id,
+      @RequestBody Map<String, Boolean> body
     ) {
         try {
             boolean approve = body.getOrDefault("approve", false);

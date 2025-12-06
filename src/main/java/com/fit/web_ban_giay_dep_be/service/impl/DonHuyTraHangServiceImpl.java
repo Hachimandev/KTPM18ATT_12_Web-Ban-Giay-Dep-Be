@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +22,7 @@ public class DonHuyTraHangServiceImpl implements DonHuyTraHangService {
     private final ChiTietSanPhamRepository chiTietSanPhamRepository;
     private final KhachHangRepository khachHangRepository;
     private final ChiTietHoaDonRepository chiTietHoaDonRepository;
+    private final ChiTietDonHuyTraHangRepository chiTietDonHuyTraHangRepository;
 
     @Override
     public List<DonHuyTraHang> getAllDonHuyTraHang() {
@@ -47,7 +50,6 @@ public class DonHuyTraHangServiceImpl implements DonHuyTraHangService {
         donHuyTraHangRepository.deleteById(id);
     }
 
-    // Sửa donHuyTraHangService.cancelOrder (Logic gốc của Khách hàng)
     @Override
     @Transactional
     public HoaDon cancelOrder(String maHoaDon, String maKhachHang) {
@@ -56,55 +58,90 @@ public class DonHuyTraHangServiceImpl implements DonHuyTraHangService {
 
         TrangThaiHoaDon currentStatus = hoaDon.getTrangThaiHoaDon();
 
-        // KIỂM TRA QUYỀN VÀ TRẠNG THÁI KHÁCH HÀNG
+        // [LOGIC KIỂM TRA QUYỀN VÀ TRẠNG THÁI (Giữ nguyên)]
         if (currentStatus == TrangThaiHoaDon.CHO_XAC_NHAN) {
-            // 💡 Dùng cho KHÁCH TỰ HỦY: Phải kiểm tra quyền sở hữu
             if (!hoaDon.getKhachHang().getMaKhachHang().equals(maKhachHang)) {
                 throw new SecurityException("Bạn không có quyền hủy đơn hàng này.");
             }
-            // Tiếp tục HỦY ngay (nhảy xuống logic hoàn kho)
         }
         else if (currentStatus == TrangThaiHoaDon.DANG_GIAO) {
-            // KHÁCH YÊU CẦU HỦY: Chuyển sang CHO_HUY
             if (!hoaDon.getKhachHang().getMaKhachHang().equals(maKhachHang)) {
                 throw new SecurityException("Bạn không có quyền gửi yêu cầu hủy đơn này.");
             }
             hoaDon.setTrangThaiHoaDon(TrangThaiHoaDon.CHO_HUY);
             return hoaDonRepository.save(hoaDon);
-        }
-        // LỖI XẢY RA Ở ĐÂY: Nếu trạng thái là CHO_HUY (Admin đang gọi), ta không nên ném exception.
-        else if (currentStatus != TrangThaiHoaDon.CHO_HUY) {
+        } else if (currentStatus != TrangThaiHoaDon.CHO_HUY) {
             throw new RuntimeException("Không thể hủy đơn hàng ở trạng thái hiện tại (" + currentStatus + ").");
         }
 
-        // --- LOGIC HOÀN KHO & HOÀN ĐIỂM ---
-        // Logic này sẽ chạy nếu trạng thái là CHO_XAC_NHAN (sau khi kiểm tra quyền) HOẶC CHO_HUY (Admin gọi)
+        // --- BẮT ĐẦU LOGIC HỦY VÀ HOÀN KHO/ĐIỂM ---
 
-        // ... (Hoàn điểm và Trả lại tồn kho)
-        // Tôi sẽ chỉ tập trung vào phần tồn kho vì nó gây lỗi 400/500
+        // 1. TẠO ĐỐI TƯỢNG DonHuyTraHang
+        DonHuyTraHang donHuyTraHang = new DonHuyTraHang();
+        // 💡 TẠO MÃ ĐƠN HỦY (Cần hàm generateMaDonHuyTraHang)
+        donHuyTraHang.setMaDonHuyTraHang(generateMaDonHuyTraHang());
+        donHuyTraHang.setNgayHuyTraHang(LocalDateTime.now());
+        donHuyTraHang.setKhachHang(hoaDon.getKhachHang());
+        donHuyTraHang.setHoaDon(hoaDon);
 
-        // TRẢ LẠI TỒN KHO (Tối ưu hóa tránh lỗi NullPointer)
+        // 💡 TÍNH TIỀN HOÀN: 0 nếu COD (Cần kiểm tra enum PhuongThucThanhToan)
+        double tienHoan = 0.0;
+        if (hoaDon.getPhuongThucThanhToan() != PhuongThucThanhToan.COD) {
+            // Tạm thời set bằng tổng tiền nếu không phải COD
+            tienHoan = hoaDon.getThanhTien();
+        }
+        donHuyTraHang.setTienHoan(tienHoan);
+
+        // 2. TẠO CHI TIẾT ĐƠN HỦY & HOÀN KHO/ĐIỂM
+
+        // 2.1. HOÀN ĐIỂM (Giữ nguyên logic của bạn)
+        // ... (Logic hoàn điểm của bạn)
+
+        // 2.2. TRẢ LẠI TỒN KHO & TẠO CHI TIẾT ĐƠN HỦY
+        List<ChiTietDonHuyTraHang> chiTiets = new java.util.ArrayList<>();
         List<ChiTietHoaDon> cthds = chiTietHoaDonRepository.findByHoaDon_MaHoaDon(maHoaDon);
 
         for (ChiTietHoaDon cthd : cthds) {
-            // 1. Lấy mã CTHD an toàn
+            // [LOGIC TRẢ LẠI TỒN KHO (Giữ nguyên logic sửa lỗi cuối cùng của bạn)]
             String maCTSP = cthd.getChiTietSanPham() != null ? cthd.getChiTietSanPham().getMaChiTiet() : null;
-
             if (maCTSP == null) {
                 throw new RuntimeException("Lỗi: CTHD không có ChiTietSanPham liên kết.");
             }
-
-            // 2. Tải lại ChiTietSanPham (Cần thiết để tránh lỗi Lazy Loading/Context)
             ChiTietSanPham ctspToUpdate = chiTietSanPhamRepository.findById(maCTSP)
                     .orElseThrow(() -> new RuntimeException("Lỗi: Chi tiết sản phẩm " + maCTSP + " không tồn tại trong kho."));
-
-            // 3. Cập nhật và lưu
             ctspToUpdate.setSoLuongTonKho(ctspToUpdate.getSoLuongTonKho() + cthd.getSoLuong());
-            chiTietSanPhamRepository.save(ctspToUpdate); // Nếu lỗi 500 xảy ra ở đây -> Lỗi ràng buộc DB
+            chiTietSanPhamRepository.save(ctspToUpdate);
+
+            // TẠO CHI TIẾT ĐƠN HỦY
+            ChiTietDonHuyTraHang ctdht = new ChiTietDonHuyTraHang();
+            // 💡 TẠO MÃ CHI TIẾT ĐƠN HỦY (Cần hàm generateMaChiTietDonHuyTraHang)
+            ctdht.setMaChiTietDonHuyTraHang(generateMaChiTietDonHuyTraHang());
+            ctdht.setSoLuong(cthd.getSoLuong());
+            ctdht.setTongTien(cthd.getTongTien());
+            ctdht.setChiTietSanPham(cthd.getChiTietSanPham());
+            ctdht.setDonHuyTraHang(donHuyTraHang);
+            chiTiets.add(ctdht);
         }
 
-        // ... (Cập nhật trạng thái DA_HUY)
+        // 3. LƯU CÁC THAY ĐỔI
+        donHuyTraHangRepository.save(donHuyTraHang);
+        chiTietDonHuyTraHangRepository.saveAll(chiTiets);
+
+        // 4. CẬP NHẬT TRẠNG THÁI CUỐI CÙNG
         hoaDon.setTrangThaiHoaDon(TrangThaiHoaDon.DA_HUY);
         return hoaDonRepository.save(hoaDon);
+    }
+
+    // 💡 Cần bổ sung các hàm tạo mã tự động:
+
+    private String generateMaDonHuyTraHang() {
+        // Implement logic to generate unique MaDonHuyTraHang (e.g., DH[date][sequence])
+        // Tương tự hàm generateMaHoaDon trong HoaDonServiceImpl
+        return "DH" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss")); // Dùng time stamp tạm thời
+    }
+
+    private String generateMaChiTietDonHuyTraHang() {
+        // Implement logic to generate unique MaChiTietDonHuyTraHang (e.g., CTHDHT[sequence])
+        return "CTDHT" + System.currentTimeMillis(); // Dùng time stamp tạm thời
     }
 }
