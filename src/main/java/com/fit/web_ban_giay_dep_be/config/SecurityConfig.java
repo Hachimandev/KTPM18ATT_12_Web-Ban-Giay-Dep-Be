@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/product-details", "/api/product-details/**").permitAll()
                         .requestMatchers("/api/cart/**", "/api/cart","/api/order/place").permitAll()
                         .requestMatchers("/api/hoadon", "/api/hoadon/**").permitAll()
+                        .requestMatchers("/api/stats", "/api/stats/**").permitAll()
                         .requestMatchers("/api/khuyenmai", "/api/khuyenmai/**").permitAll()
                         .requestMatchers("api/khachhang/", "api/khachhang/**","api/khachhang/info/**").permitAll()
                         .anyRequest().authenticated()

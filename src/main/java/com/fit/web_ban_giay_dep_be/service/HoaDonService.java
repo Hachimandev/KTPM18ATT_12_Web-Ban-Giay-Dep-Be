@@ -24,4 +24,5 @@ public interface HoaDonService {
     HoaDon updateOrderStatus(String maHoaDon, TrangThaiHoaDon newStatus);
     String getKhachHangIdByUsername(String username);
     HoaDon handleCancellationRequest(String maHoaDon, boolean approve);
+    List<HoaDon> getRecentOrders(int limit);
 }

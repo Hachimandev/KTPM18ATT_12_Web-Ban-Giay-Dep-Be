@@ -26,9 +26,9 @@ public class HoaDon {
     @Enumerated(EnumType.STRING)
     private PhuongThucThanhToan phuongThucThanhToan;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "maKhachHang")
-    @JsonIgnore
+//    @JsonIgnore
     private KhachHang khachHang;
 
     @ManyToOne
