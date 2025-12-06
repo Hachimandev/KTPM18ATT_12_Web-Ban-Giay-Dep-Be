@@ -7,4 +7,5 @@ public interface KhachHangService {
     int layDiemTichLuyTheoUsername(String username);
     KhachHang findByTaiKhoan_TenDangNhap(String username);
     KhachHang save(KhachHang kh);
+    String getKhachHangIdByUsername(String username);
 }

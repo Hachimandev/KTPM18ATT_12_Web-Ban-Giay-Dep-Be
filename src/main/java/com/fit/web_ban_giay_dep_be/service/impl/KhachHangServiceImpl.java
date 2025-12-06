@@ -19,6 +19,12 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
 
     @Override
+    public String getKhachHangIdByUsername(String username) {
+        KhachHang kh = findByTaiKhoan_TenDangNhap(username);
+        return kh.getMaKhachHang();
+    }
+
+    @Override
     public KhachHang findByTaiKhoan_TenDangNhap(String username) {
         return khachHangRepository.findByTaiKhoan_TenDangNhap(username);
     }
