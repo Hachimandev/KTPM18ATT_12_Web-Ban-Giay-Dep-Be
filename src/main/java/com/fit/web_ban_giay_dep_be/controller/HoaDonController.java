@@ -56,8 +56,17 @@ public class HoaDonController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/recent")
+    public ResponseEntity<?> getRecentOrders(@RequestParam(defaultValue = "5") int limit) {
+        try {
+            return ResponseEntity.ok(hoaDonService.getRecentOrders(limit));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Lỗi Server khi tải đơn hàng gần đây.");
+        }
+    }
+
     @PutMapping("/{id}/status")
-//        @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateOrderStatus(
             @PathVariable String id,
             @RequestBody Map<String, String> body

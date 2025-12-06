@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -104,6 +105,13 @@ public class HoaDonServiceImpl implements HoaDonService {
             hoaDon.setTrangThaiHoaDon(TrangThaiHoaDon.DANG_GIAO);
             return hoaDonRepository.save(hoaDon);
         }
+    }
+
+    @Override
+    @Transactional
+    public List<HoaDon> getRecentOrders(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return hoaDonRepository.findRecentWithCustomer(pageable);
     }
 
     @Transactional
