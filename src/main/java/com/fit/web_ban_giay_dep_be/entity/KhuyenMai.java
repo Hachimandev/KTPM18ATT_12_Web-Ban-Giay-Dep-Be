@@ -1,5 +1,6 @@
 package com.fit.web_ban_giay_dep_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Date;
@@ -18,11 +19,13 @@ public class KhuyenMai {
     private String dieuKien;
     private double chietKhau;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "maNhanVien")
+    @JsonIgnore
     private NhanVien nhanVien;
 
 
     @OneToMany(mappedBy = "khuyenMai")
+    @JsonIgnore
     private List<HoaDon> hoaDons;
 }

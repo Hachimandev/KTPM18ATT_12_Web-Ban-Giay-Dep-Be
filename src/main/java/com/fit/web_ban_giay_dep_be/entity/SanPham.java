@@ -45,7 +45,7 @@ public class SanPham {
     @JsonIgnore
     private List<NhaCungCap> nhaCungCaps;
 
-    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<ChiTietSanPham> chiTietSanPhams;
 }

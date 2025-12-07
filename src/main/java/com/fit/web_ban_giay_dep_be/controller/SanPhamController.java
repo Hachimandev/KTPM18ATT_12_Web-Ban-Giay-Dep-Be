@@ -41,7 +41,6 @@ public class SanPhamController {
 
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SanPham> createSanPham(@RequestBody SanPham sanPham) {
         return ResponseEntity.ok(sanPhamService.addSanPham(sanPham));
     }
