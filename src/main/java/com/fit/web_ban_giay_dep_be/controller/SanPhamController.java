@@ -41,20 +41,19 @@ public class SanPhamController {
 
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SanPham> createSanPham(@RequestBody SanPham sanPham) {
         return ResponseEntity.ok(sanPhamService.addSanPham(sanPham));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<SanPham> updateSanPham(@PathVariable String id, @RequestBody SanPham sanPham) {
         return ResponseEntity.ok(sanPhamService.updateSanPham(id, sanPham));
     }
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<Void> deleteSanPham(@PathVariable String id) {
         sanPhamService.deleteSanPham(id);
         return ResponseEntity.noContent().build();

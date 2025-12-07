@@ -87,8 +87,30 @@ public class SanPhamServiceImpl implements com.fit.web_ban_giay_dep_be.service.S
     }
 
 
+
+    ///  them sản phẩm
+
+    // phát sinh mã sản phẩm
+    public String phatSinhMaSP(){
+        return "SP" + System.currentTimeMillis();
+    }
+
+    // phát sinh mã chi tiết sản phẩm
+    public String phatSinhMaCTSP(){
+        return "SP" + System.nanoTime();
+    }
+
     @Override
     public SanPham addSanPham(SanPham sanPham) {
+        sanPham.setMaSanPham(phatSinhMaSP());
+        if (sanPham.getChiTietSanPhams() != null) {
+            for (ChiTietSanPham ct : sanPham.getChiTietSanPhams()) {
+                ct.setMaChiTiet(phatSinhMaCTSP());
+                ct.setSanPham(sanPham);
+            }
+        }
+
+
         return sanPhamRepository.save(sanPham);
     }
 
