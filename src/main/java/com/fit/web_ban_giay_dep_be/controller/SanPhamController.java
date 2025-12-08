@@ -26,9 +26,10 @@ public class SanPhamController {
             @RequestParam(required = false) List<String> sizes,
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String gender
     ) {
-        return ResponseEntity.ok(sanPhamService.getAllSanPham(searchTerm, category, brand, sizes, sort, minPrice, maxPrice));
+        return ResponseEntity.ok(sanPhamService.getAllSanPham(searchTerm, category, gender, brand, sizes, sort, minPrice, maxPrice));
     }
 
 
