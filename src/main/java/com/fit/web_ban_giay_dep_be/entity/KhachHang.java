@@ -30,4 +30,8 @@ public class KhachHang {
     @OneToMany(mappedBy = "khachHang", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<HoaDon> hoaDons;
+
+    @OneToMany(mappedBy = "khachHang", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<BinhLuan> binhLuans;
 }
