@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/khuyenmai", "/api/khuyenmai/**").permitAll()
                         .requestMatchers("/api/khachhang/", "/api/khachhang/**","/api/khachhang/info/**").permitAll()
                         .requestMatchers("/api/categories", "/api/categories/**").permitAll()
-                        .requestMatchers("/api/suppliers").permitAll()
+                        .requestMatchers("/api/suppliers","/api/suppliers/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
