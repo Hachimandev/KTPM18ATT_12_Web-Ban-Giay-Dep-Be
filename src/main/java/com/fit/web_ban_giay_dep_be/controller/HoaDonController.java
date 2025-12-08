@@ -37,6 +37,20 @@ public class HoaDonController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/customer/{id}")
+    public ResponseEntity<?> getCustomerOrder(
+            @PathVariable String id,
+            @RequestParam String username) {
+
+        return hoaDonService.getAllHoaDon().stream()
+                .filter(h -> h.getMaHoaDon().equals(id))
+                .filter(h -> h.getKhachHang() != null &&
+                        username.equals(h.getKhachHang().getTaiKhoan().getTenDangNhap()))
+                .findFirst()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(403).build());
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<HoaDon> createHoaDon(@RequestBody HoaDon hoaDon) {

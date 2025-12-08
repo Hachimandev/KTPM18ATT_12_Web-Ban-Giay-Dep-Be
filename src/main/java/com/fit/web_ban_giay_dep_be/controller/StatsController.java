@@ -39,16 +39,16 @@ public class StatsController {
         return ResponseEntity.ok(statsService.getOrdersByCategoryData());
     }
 
-    @GetMapping("/export/monthly-sales")
-    public void exportMonthlySales(HttpServletResponse response) throws IOException {
+    @GetMapping("/export/comprehensive-stats")
+    public void exportComprehensiveStats(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=Bao_cao_doanh_thu_thang.xlsx";
+        String headerValue = "attachment; filename=Bao_cao_tong_hop.xlsx";
 
         response.setHeader(headerKey, headerValue);
 
         try {
-            statsService.exportMonthlySalesToExcel(response);
+            statsService.exportComprehensiveStatsToExcel(response);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("Lỗi khi tạo file báo cáo: " + e.getMessage());
