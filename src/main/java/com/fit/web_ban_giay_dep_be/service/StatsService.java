@@ -10,5 +10,5 @@ public interface StatsService {
     GlobalStatsDTO getGlobalStats();
     ChartDataDTO getMonthlySalesData();
     ChartDataDTO getOrdersByCategoryData();
-    void exportMonthlySalesToExcel(HttpServletResponse response) throws IOException; // 💡 Phương thức mới
+    void exportComprehensiveStatsToExcel(HttpServletResponse response) throws IOException;
 }
