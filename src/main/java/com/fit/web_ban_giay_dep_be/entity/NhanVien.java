@@ -15,14 +15,22 @@ public class NhanVien {
     @Id
     private String maNhanVien;
     private String hoTen;
+    private String email;
     private String sdt;
     private String cccd;
+    private String img;
     private Date ngaySinh;
     @Enumerated(EnumType.STRING)
     private TrangThaiLamViec trangThaiLamViec;
 
     @Enumerated(EnumType.STRING)
     private GioiTinh gioiTinh;
+
+    @Enumerated(EnumType.STRING)
+    private ChucVu chucVu;
+
+    @Enumerated(EnumType.STRING)
+    private PhongBan phongBan;
 
     @OneToOne
     @JoinColumn(name = "maTaiKhoan")
