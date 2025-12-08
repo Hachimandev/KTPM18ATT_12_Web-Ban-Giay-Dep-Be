@@ -1,6 +1,7 @@
 package com.fit.web_ban_giay_dep_be.service.impl;
 
 import com.fit.web_ban_giay_dep_be.entity.ChiTietSanPham;
+import com.fit.web_ban_giay_dep_be.entity.GioiTinh;
 import com.fit.web_ban_giay_dep_be.entity.SanPham;
 import com.fit.web_ban_giay_dep_be.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class SanPhamServiceImpl implements com.fit.web_ban_giay_dep_be.service.S
 
 
     @Override
-    public List<SanPham> getAllSanPham(String searchTerm, String category, String brand, List<String> sizes, String sort, Double minPrice, Double maxPrice) {
+    public List<SanPham> getAllSanPham(String searchTerm, String category, String gender, String brand, List<String> sizes, String sort, Double minPrice, Double maxPrice) {
 
         Specification<SanPham> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -34,6 +35,14 @@ public class SanPhamServiceImpl implements com.fit.web_ban_giay_dep_be.service.S
                 } else if (category.equalsIgnoreCase("sandals") || category.equalsIgnoreCase("dep")) {
                     Join<Object, Object> loaiJoin = root.join("loaiSanPham");
                     predicates.add(criteriaBuilder.like(loaiJoin.get("tenLoai"), "%Sandal%"));
+                }
+            }
+
+            if (gender != null && !gender.isEmpty()) {
+                try {
+                    GioiTinh gioiTinh = GioiTinh.valueOf(gender);
+                    predicates.add(criteriaBuilder.equal(root.get("gioiTinh"), gioiTinh));
+                } catch (IllegalArgumentException e) {
                 }
             }
 
