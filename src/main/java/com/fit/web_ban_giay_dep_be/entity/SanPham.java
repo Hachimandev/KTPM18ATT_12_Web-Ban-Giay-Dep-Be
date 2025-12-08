@@ -48,4 +48,8 @@ public class SanPham {
     @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<ChiTietSanPham> chiTietSanPhams;
+
+    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<BinhLuan> binhLuans;
 }

@@ -170,3 +170,20 @@ INSERT INTO khach_hang (ma_khach_hang, ho_ten, email, sdt, dia_chi, diem_tich_lu
 ('KH001', 'Nguyễn Thị B', 'khachhang@gmail.com', '0987654321', '123 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP Hồ Chí Minh', 50, 'TK002');
 
 
+-- 6. BINH LUAN (BinhLuan)
+-- *********************************************************************************
+
+-- Giả định MaKhachHang = 'KH001', MaSanPham: 'SP001' (Sneaker Nam), 'SP003' (Chạy bộ Nữ)
+
+-- Bình luận cho SP001 (Sneaker Nam)
+INSERT INTO binh_luan (noi_dung, diem_danh_gia, ngay_tao, ma_khach_hang, ma_san_pham) VALUES
+('Giày đẹp, da êm, giao hàng nhanh!', 5, NOW(), 'KH001', 'SP001');
+
+-- Bình luận cho SP003 (Chạy bộ Nữ)
+INSERT INTO binh_luan (noi_dung, diem_danh_gia, ngay_tao, ma_khach_hang, ma_san_pham) VALUES
+('Đế Air rất đàn hồi, chạy bộ không bị đau chân, rất đáng tiền.', 5, NOW(), 'KH001', 'SP003'),
+('Màu sắc hợp thời trang, nhưng kích cỡ hơi lớn hơn bình thường.', 4, NOW() - INTERVAL 1 DAY, 'KH001', 'SP003');
+
+-- Bình luận cho SP006 (Cao gót Nữ)
+INSERT INTO binh_luan (noi_dung, diem_danh_gia, ngay_tao, ma_khach_hang, ma_san_pham) VALUES
+('Đôi giày rất quyến rũ, đi dự tiệc rất nổi bật. Tuyệt vời!', 5, NOW(), 'KH001', 'SP006');
