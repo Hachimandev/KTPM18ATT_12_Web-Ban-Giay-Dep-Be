@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,6 +20,8 @@ public class KhachHang {
     private String sdt;
     private String diaChi;
     private int diemTichLuy;
+    private LocalDateTime ngayThamGia;
+    private double tongChiTieu;
 
 
     @OneToOne

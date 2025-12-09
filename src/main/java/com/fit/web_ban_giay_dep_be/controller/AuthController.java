@@ -23,6 +23,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -74,6 +75,8 @@ public class AuthController {
                 .sdt(null)
                 .diaChi(null)
                 .diemTichLuy(0)
+                .ngayThamGia(LocalDateTime.now())
+                .tongChiTieu(0)
                 .taiKhoan(user)
                 .build();
 
@@ -122,6 +125,8 @@ public class AuthController {
                         .hoTen(fullName)
                         .email(email)
                         .diemTichLuy(0)
+                        .ngayThamGia(LocalDateTime.now())
+                        .tongChiTieu(0)
                         .taiKhoan(user)
                         .build();
 
