@@ -14,4 +14,6 @@ public interface KhuyenMaiRepository extends JpaRepository<KhuyenMai, String> {
     List<KhuyenMai> findKhuyenMaiHopLe(@Param("ngayHienTai") Date ngayHienTai);
 
     List<KhuyenMai> findByMaKhuyenMaiContainingOrDieuKienContaining(String maKhuyenMai, String dieuKien);
+    @Query(value = "SELECT maKhuyenMai FROM KhuyenMai ORDER BY maKhuyenMai DESC LIMIT 1")
+    String findMaxMaKhuyenMai();
 }

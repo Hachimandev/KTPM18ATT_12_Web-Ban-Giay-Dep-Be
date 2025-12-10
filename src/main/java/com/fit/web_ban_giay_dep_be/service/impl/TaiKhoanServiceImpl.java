@@ -3,6 +3,7 @@ package com.fit.web_ban_giay_dep_be.service.impl;
 import com.fit.web_ban_giay_dep_be.dto.ChangePasswordRequest;
 import com.fit.web_ban_giay_dep_be.dto.UpdateAccountRequest;
 import com.fit.web_ban_giay_dep_be.entity.TaiKhoan;
+import com.fit.web_ban_giay_dep_be.entity.KhachHang; // 💡 Import KhachHang
 import com.fit.web_ban_giay_dep_be.repository.TaiKhoanRepository;
 import com.fit.web_ban_giay_dep_be.service.TaiKhoanService;
 import jakarta.transaction.Transactional;
@@ -36,16 +37,19 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
             taiKhoan.setEmail(request.getEmail());
         }
 
-        if (taiKhoan.getKhachHang() != null) {
+        KhachHang khachHang = taiKhoan.getKhachHang();
+
+        if (khachHang != null) {
             if (request.getHoTen() != null) {
-                taiKhoan.getKhachHang().setHoTen(request.getHoTen());
+                khachHang.setHoTen(request.getHoTen());
             }
             if (request.getSdt() != null) {
-                taiKhoan.getKhachHang().setSdt(request.getSdt());
+                khachHang.setSdt(request.getSdt());
             }
             if (request.getDiaChi() != null) {
-                taiKhoan.getKhachHang().setDiaChi(request.getDiaChi());
+                khachHang.setDiaChi(request.getDiaChi());
             }
+        } else if (request.getHoTen() != null || request.getSdt() != null || request.getDiaChi() != null) {
         }
 
         return taiKhoanRepository.save(taiKhoan);
@@ -57,15 +61,23 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         TaiKhoan taiKhoan = taiKhoanRepository.findByTenDangNhap(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
 
-        if (!passwordEncoder.matches(request.getOldPassword(), taiKhoan.getMatKhau())) {
+        String oldPassword = request.getOldPassword();
+        String newPassword = request.getNewPassword();
+
+        if (oldPassword == null || !passwordEncoder.matches(oldPassword, taiKhoan.getMatKhau())) {
             throw new RuntimeException("Mật khẩu cũ không đúng");
         }
 
-        if (request.getNewPassword().length() < 6) {
+        if (newPassword == null || newPassword.length() < 6) {
             throw new RuntimeException("Mật khẩu mới phải có ít nhất 6 ký tự");
         }
 
-        taiKhoan.setMatKhau(passwordEncoder.encode(request.getNewPassword()));
+        if (passwordEncoder.matches(newPassword, taiKhoan.getMatKhau())) {
+            throw new RuntimeException("Mật khẩu mới không được trùng với mật khẩu cũ");
+        }
+
+        taiKhoan.setMatKhau(passwordEncoder.encode(newPassword));
         taiKhoanRepository.save(taiKhoan);
+
     }
 }

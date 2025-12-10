@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -31,12 +32,31 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy khuyến mãi"));
     }
 
+    private String generateNewMaKhuyenMai() {
+        String maxId = khuyenMaiRepository.findMaxMaKhuyenMai();
+        int nextNumber = 1;
+
+        if (maxId != null && maxId.startsWith("KM")) {
+            try {
+                // Tách phần số (ví dụ: 001)
+                String numberPart = maxId.substring(2);
+                nextNumber = Integer.parseInt(numberPart) + 1;
+            } catch (NumberFormatException e) {
+                // Nếu không tách được số, bắt đầu từ 1
+                nextNumber = 1;
+            }
+        }
+
+        // Định dạng số thành chuỗi 3 chữ số (ví dụ: 1 -> 001)
+        DecimalFormat df = new DecimalFormat("000");
+        return "KM" + df.format(nextNumber);
+    }
+
     @Override
     @Transactional
     public KhuyenMai themKhuyenMai(KhuyenMaiRequest request) {
-        if (khuyenMaiRepository.existsById(request.getMaKhuyenMai())) {
-            throw new RuntimeException("Mã khuyến mãi đã tồn tại");
-        }
+
+        // 💡 BỎ QUA KIỂM TRA request.getMaKhuyenMai() vì chúng ta tự sinh mã
 
         NhanVien nhanVien = null;
         if (request.getMaNhanVien() != null) {
@@ -44,8 +64,11 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
         }
 
+        // 💡 SỬ DỤNG HÀM TẠO MÃ MỚI
+        String newMaKhuyenMai = generateNewMaKhuyenMai();
+
         KhuyenMai khuyenMai = KhuyenMai.builder()
-                .maKhuyenMai(request.getMaKhuyenMai())
+                .maKhuyenMai(newMaKhuyenMai) // 💡 GÁN MÃ MỚI
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
                 .dieuKien(request.getDieuKien())
