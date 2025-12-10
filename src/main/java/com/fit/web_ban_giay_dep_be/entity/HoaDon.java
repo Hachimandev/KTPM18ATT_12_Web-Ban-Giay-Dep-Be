@@ -18,7 +18,7 @@ public class HoaDon {
     private String maHoaDon;
     private LocalDateTime ngayDat;
     private int diemSuDung;
-    private double thanhTien;
+    private Double thanhTien;
 
     @Enumerated(EnumType.STRING)
     private TrangThaiHoaDon trangThaiHoaDon;

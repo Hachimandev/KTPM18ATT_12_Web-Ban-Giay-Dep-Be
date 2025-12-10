@@ -1,5 +1,23 @@
 package com.fit.web_ban_giay_dep_be.controller;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.fit.web_ban_giay_dep_be.dto.HoaDonResponseDTO;
 import com.fit.web_ban_giay_dep_be.dto.OrderRequest;
 import com.fit.web_ban_giay_dep_be.entity.HoaDon;
@@ -7,14 +25,8 @@ import com.fit.web_ban_giay_dep_be.entity.TrangThaiHoaDon;
 import com.fit.web_ban_giay_dep_be.service.DonHuyTraHangService;
 import com.fit.web_ban_giay_dep_be.service.HoaDonService;
 import com.fit.web_ban_giay_dep_be.service.KhachHangService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/hoadon")
@@ -196,6 +208,16 @@ public class HoaDonController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Lỗi Server không xác định: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/export/excel")
+    public ResponseEntity<byte[]> exportToExcel() throws IOException {
+        byte[] excelFile = hoaDonService.exportToExcel();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=HoaDon.xlsx")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(excelFile);
     }
 
 }
