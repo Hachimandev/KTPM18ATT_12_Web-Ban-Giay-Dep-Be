@@ -46,4 +46,25 @@ public class BinhLuanServiceImpl implements BinhLuanService {
 
         return binhLuanRepository.save(binhLuan);
     }
+
+    @Override
+    @Transactional
+    public BinhLuan updateComment(Long id, BinhLuanRequest request) {
+        BinhLuan binhLuan = binhLuanRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Bình luận không tồn tại."));
+
+        binhLuan.setNoiDung(request.getNoiDung());
+        binhLuan.setDiemDanhGia(request.getDiemDanhGia());
+
+        return binhLuanRepository.save(binhLuan);
+    }
+
+    @Override
+    @Transactional
+    public void deleteComment(Long id) {
+        BinhLuan binhLuan = binhLuanRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Bình luận không tồn tại."));
+
+        binhLuanRepository.delete(binhLuan);
+    }
 }
