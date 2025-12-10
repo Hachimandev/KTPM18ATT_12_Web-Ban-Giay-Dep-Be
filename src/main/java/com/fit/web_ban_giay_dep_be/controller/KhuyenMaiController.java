@@ -29,7 +29,6 @@ public class KhuyenMaiController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> themKhuyenMai(@RequestBody KhuyenMaiRequest request) {
         try {
             KhuyenMai khuyenMai = khuyenMaiService.themKhuyenMai(request);
@@ -40,7 +39,6 @@ public class KhuyenMaiController {
     }
 
     @PutMapping("/{maKhuyenMai}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> capNhatKhuyenMai(@PathVariable String maKhuyenMai, @RequestBody KhuyenMaiRequest request) {
         try {
             KhuyenMai khuyenMai = khuyenMaiService.capNhatKhuyenMai(maKhuyenMai, request);

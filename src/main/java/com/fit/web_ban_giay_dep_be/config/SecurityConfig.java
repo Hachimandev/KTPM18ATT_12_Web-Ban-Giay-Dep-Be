@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/hoadon", "/api/hoadon/**").permitAll()
                         .requestMatchers("/api/stats", "/api/stats/**").permitAll()
                         .requestMatchers("/api/khuyenmai", "/api/khuyenmai/**").permitAll()
+                        .requestMatchers("/api/taikhoan", "/api/taikhoan/**").permitAll()
                         .requestMatchers("/api/khachhang/", "/api/khachhang/**","/api/khachhang/info/**").permitAll()
                         .requestMatchers("/api/categories", "/api/categories/**").permitAll()
                         .requestMatchers("/api/suppliers","/api/suppliers/**").permitAll()
