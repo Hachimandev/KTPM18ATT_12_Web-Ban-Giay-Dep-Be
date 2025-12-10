@@ -1,13 +1,14 @@
 package com.fit.web_ban_giay_dep_be.service;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
 import com.fit.web_ban_giay_dep_be.dto.Cart;
 import com.fit.web_ban_giay_dep_be.dto.HoaDonResponseDTO;
 import com.fit.web_ban_giay_dep_be.dto.OrderRequest;
 import com.fit.web_ban_giay_dep_be.entity.HoaDon;
 import com.fit.web_ban_giay_dep_be.entity.TrangThaiHoaDon;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface HoaDonService {
     List<HoaDon> getAllHoaDon();
@@ -25,4 +26,6 @@ public interface HoaDonService {
     String getKhachHangIdByUsername(String username);
     HoaDon handleCancellationRequest(String maHoaDon, boolean approve);
     List<HoaDon> getRecentOrders(int limit);
+
+    byte[] exportToExcel() throws IOException;
 }

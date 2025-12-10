@@ -1,27 +1,44 @@
 package com.fit.web_ban_giay_dep_be.service.impl;
 
-import com.fit.web_ban_giay_dep_be.dto.Cart;
-import com.fit.web_ban_giay_dep_be.dto.HoaDonResponseDTO;
-import com.fit.web_ban_giay_dep_be.dto.OrderRequest;
-import com.fit.web_ban_giay_dep_be.entity.*;
-import com.fit.web_ban_giay_dep_be.repository.*;
-import com.fit.web_ban_giay_dep_be.service.DonHuyTraHangService;
-import com.fit.web_ban_giay_dep_be.service.EmailService;
-import com.fit.web_ban_giay_dep_be.service.HoaDonService;
-import com.fit.web_ban_giay_dep_be.service.KhachHangService;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.fit.web_ban_giay_dep_be.dto.Cart;
+import com.fit.web_ban_giay_dep_be.dto.HoaDonResponseDTO;
+import com.fit.web_ban_giay_dep_be.dto.OrderRequest;
+import com.fit.web_ban_giay_dep_be.entity.ChiTietHoaDon;
+import com.fit.web_ban_giay_dep_be.entity.ChiTietSanPham;
+import com.fit.web_ban_giay_dep_be.entity.HoaDon;
+import com.fit.web_ban_giay_dep_be.entity.KhachHang;
+import com.fit.web_ban_giay_dep_be.entity.KhuyenMai;
+import com.fit.web_ban_giay_dep_be.entity.PhuongThucThanhToan;
+import com.fit.web_ban_giay_dep_be.entity.TrangThaiHoaDon;
+import com.fit.web_ban_giay_dep_be.repository.ChiTietHoaDonRepository;
+import com.fit.web_ban_giay_dep_be.repository.ChiTietSanPhamRepository;
+import com.fit.web_ban_giay_dep_be.repository.HoaDonRepository;
+import com.fit.web_ban_giay_dep_be.repository.KhachHangRepository;
+import com.fit.web_ban_giay_dep_be.repository.KhuyenMaiRepository;
+import com.fit.web_ban_giay_dep_be.service.DonHuyTraHangService;
+import com.fit.web_ban_giay_dep_be.service.EmailService;
+import com.fit.web_ban_giay_dep_be.service.HoaDonService;
+import com.fit.web_ban_giay_dep_be.service.KhachHangService;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -225,5 +242,51 @@ public class HoaDonServiceImpl implements HoaDonService {
             }
         }
         return String.format("CTHD%04d", next);
+    }
+
+    @Override
+    public byte[] exportToExcel() throws IOException {
+        List<HoaDon> hoaDons = hoaDonRepository.findAll();
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Hóa đơn");
+
+        // Create header row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Mã hóa đơn");
+        headerRow.createCell(1).setCellValue("Khách hàng");
+        headerRow.createCell(2).setCellValue("Ngày đặt");
+        headerRow.createCell(3).setCellValue("Tổng tiền");
+        headerRow.createCell(4).setCellValue("Thanh toán");
+        headerRow.createCell(5).setCellValue("Trạng thái");
+
+        // Set column widths
+        sheet.setColumnWidth(0, 15 * 256);
+        sheet.setColumnWidth(1, 20 * 256);
+        sheet.setColumnWidth(2, 20 * 256);
+        sheet.setColumnWidth(3, 15 * 256);
+        sheet.setColumnWidth(4, 20 * 256);
+        sheet.setColumnWidth(5, 18 * 256);
+
+        // Fill data
+        int rowNum = 1;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        
+        for (HoaDon hoaDon : hoaDons) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(hoaDon.getMaHoaDon());
+            row.createCell(1).setCellValue(hoaDon.getKhachHang() != null ? hoaDon.getKhachHang().getHoTen() : "Ẩn danh");
+            row.createCell(2).setCellValue(hoaDon.getNgayDat() != null ? hoaDon.getNgayDat().format(formatter) : "");
+            row.createCell(3).setCellValue(hoaDon.getThanhTien() != null ? hoaDon.getThanhTien() : 0);
+            row.createCell(4).setCellValue(hoaDon.getPhuongThucThanhToan() != null ? hoaDon.getPhuongThucThanhToan().toString() : "");
+            row.createCell(5).setCellValue(hoaDon.getTrangThaiHoaDon() != null ? hoaDon.getTrangThaiHoaDon().toString() : "");
+        }
+
+        // Convert to byte array
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        return outputStream.toByteArray();
     }
 }

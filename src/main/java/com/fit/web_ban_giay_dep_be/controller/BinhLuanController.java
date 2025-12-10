@@ -31,4 +31,24 @@ public class BinhLuanController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateComment(@PathVariable Long id, @RequestBody BinhLuanRequest request) {
+        try {
+            BinhLuan updatedComment = binhLuanService.updateComment(id, request);
+            return ResponseEntity.ok(updatedComment);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long id) {
+        try {
+            binhLuanService.deleteComment(id);
+            return ResponseEntity.ok().body("Xóa bình luận thành công");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
